@@ -1,0 +1,8 @@
+MENU-LIST
+[DSP] ECHO.                            This is submenu 2&&ECHO.
+[GROUP] Disklist
+[CMD] menuscript.cmd ex_disklist.menu
+[GROUP] Placeholder
+[CMD] PAUSE
+[DSP] ECHO.
+

@@ -1,0 +1,3 @@
+MENU-LIST
+[DSP] ECHO.                           This is disklist menu&&ECHO.
+[DSP] CALL %MODULE_FOLDER%\DISKLIST.CMD
