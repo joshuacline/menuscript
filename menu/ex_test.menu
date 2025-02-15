@@ -3,31 +3,28 @@ MENU-LIST
 [DSP] ECHO.                               Test menu
 [DSP] ECHO.
 
-
 [GROUP] Edit this menu
 [CMD] START notepad.exe %MENU_FOLDER%\ex_test.menu
+
+
+
 [GROUP] Upper/Lower Case Menu Select
 
 ::The following options are not required for using the menu selection prompt.
 ::All options can be combined into a single line.
 ::Example [CMD] SET SELECT_OUT=TEST123&SET CASE=LOWER&SET CHECK=MOST
 
-::Select output sets variable name for a menu prompt. Default is SELECT when SELECT_OUT is not specified.
+::Select output sets variable name for a menu prompt. Default is %SELECT% when SELECT_OUT is not specified.
 [CMD] SET SELECT_OUT=TEST123
-
 ::Options for character checking are NUM LTR ALPHA MENU MOST.
 [CMD] SET CHECK=ALPHA
-
 :::Displays error message when an invalid character is entered. 
 [CMD] SET VERBOSE=1
-
 ::Options for case output are LOWER UPPER ANY. Default is UPPER when CASE is not specified.
 [CMD] SET CASE=UPPER
-
 ::Additional options are NO_ASTRK and NO_SPACE. Default is allowed.
 [CMD] SET NO_ASTRK=1
 [CMD] SET NO_SPACE=1
-
 
 ::Displays padline
 [CMD] CALL:PAD_LINE
@@ -46,40 +43,35 @@ MENU-LIST
 [CMD] CALL:PAD_LINE
 ::Displays Press enter to return
 [CMD] CALL:PAD_PREV
-
-
 ::Opens menu selection prompt with the specified options.
 [CMD] CALL:MENU_SELECT
-
 
 [CMDI] IF DEFINED TEST123 ECHO. Output:%#@% %TEST123% %#$%
 [CMD] ECHO.
 [CMD] PAUSE
 
 
-[GROUP] File list + File Select
+
+[GROUP] File list + File Pick
 [CMD] CALL:PAD_LINE
 ::Displays round box top
 [CMD] CALL:BOX_RT
 [CMD] ECHO.                               File List
 [CMD] ECHO.
-
-::Options for file list
+::Options for file list (required)
 [CMD] SET $FOLD=%MENU_FOLDER%
 [CMD] SET $FILT=*.MENU
-
 ::Opens file list with the specified options.
 [CMD] CALL:FILE_LIST
 [CMD] ECHO.
-
-
 ::Displays round box top
 [CMD] CALL:BOX_RB
 ::Displays padline
 [CMD] CALL:PAD_LINE
 ::Displays Press enter to return
 [CMD] CALL:PAD_PREV
-[CMD] SET FILE_SELECT=1&CALL:MENU_SELECT
+::Opens menu selection prompt with default options
+[CMD] CALL:MENU_SELECT
 [CMD] ECHO. $PICK: %$PICK%    $CHOICE: %$CHOICE%
 [CMD] PAUSE
 [DSP] ECHO.
