@@ -1,4 +1,4 @@
-::MenuScript v 001 (C) Joshua Cline - All rights reserved
+::MenuScript v 002 (C) Joshua Cline - All rights reserved
 @ECHO OFF&&SETLOCAL ENABLEDELAYEDEXPANSION&&CHCP 65001>NUL
 SET "ARG1=%1"&&SET "ORIG_CMD=%0"&&SET "VER_GET=%0"&&CALL:GET_PROGVER
 SET "ORIG_CD=%CD%"&&CD /D "%~DP0"&&CALL:GET_INIT
@@ -7,16 +7,16 @@ IF DEFINED ARG1 SET "PROG_MODE=COMMAND"&&CALL:SETS_HANDLER&&GOTO:IMAGEMGR_RUN
 ::#########################################################################
 :MAIN_MENU
 ::#########################################################################
-@ECHO OFF&&CLS&&SET "PROG_MODE=PORTABLE"&&CALL:SETS_HANDLER&&CALL:CLEAN&&CALL:PAD_LINE&&SET "BOX=T1"&&CALL:BOX_DISP
-ECHO.                               MenuScript&&ECHO.&&ECHO.  %#@%AVAILABLE MENUs:%#$%&&ECHO.&&SET "BLIST=MENU"&&CALL:FILE_LIST
-ECHO.&&SET "BOX=B1"&&CALL:BOX_DISP&&CALL:PAD_LINE&&ECHO. (%##%Q%#$%)uit              (%##%R%#$%)un              (%##%E%#$%)dit              (%##%O%#$%)ptions&&CALL:PAD_LINE
+@ECHO OFF&&CLS&&SET "PROG_MODE=PORTABLE"&&CALL:SETS_HANDLER&&CALL:CLEAN&&CALL:PAD_LINE&&CALL:BOX_RT
+ECHO.                               MenuScript&&ECHO.&&ECHO.  %@@%AVAILABLE MENUs:%$$%&&ECHO.&&SET "$FOLD=%MENU_FOLDER%"&&SET "$FILT=*.MENU"&&SET "LIST_DISP=BAS"&&CALL:FILE_LIST
+ECHO.&&CALL:BOX_RB&&CALL:PAD_LINE&&ECHO. (%##%Q%$$%)uit              (%##%R%$$%)un              (%##%E%$$%)dit              (%##%O%$$%)ptions&&CALL:PAD_LINE
 CALL:PAD_PREV&&CALL:MENU_SELECT
 IF NOT DEFINED SELECT GOTO:MAIN_MENU
 IF "%SELECT%"=="~" SET&&PAUSE
 IF "%SELECT%"=="Q" GOTO:QUIT
 IF "%SELECT%"=="O" GOTO:SETTINGS_MENU
-IF "%SELECT%"=="R" SET "MENUT0= "&&SET "MENUT1=  %#@%AVAILABLE MENUs:%#$%"&&SET "MENUT2= "&&SET "MENUB0= "&&SET "PICK=MENU"&&CALL:FILE_PICK&GOTO:IMAGEMGR_RUN&SET "SELECT="
-IF "%SELECT%"=="E" SET "MENUT0=                               Edit Menu"&&SET "MENUT1= "&&SET "MENUT2=  %#@%AVAILABLE MENUs:%#$%"&&SET "MENUT3= "&&SET "MENUB0= "&&SET "PICK=MENU"&&CALL:FILE_PICK&&CALL:MENU_EDIT&SET "SELECT="
+IF "%SELECT%"=="R" CLS&&CALL:PAD_LINE&&CALL:BOX_RT&&ECHO.                               Open Menu&&ECHO.&&ECHO.  %@@%AVAILABLE MENUs:%$$%&&ECHO.&&SET "$FOLD=%MENU_FOLDER%"&&SET "$FILT=*.MENU"&&CALL:FILE_LIST&&ECHO.&&CALL:BOX_RB&&CALL:PAD_LINE&&CALL:PAD_PREV&&SET "FILE_SELECT=1"&&CALL:MENU_SELECT&&GOTO:IMAGEMGR_RUN
+IF "%SELECT%"=="E" CLS&&CALL:PAD_LINE&&CALL:BOX_RT&&ECHO.                               Edit Menu&&ECHO.&&ECHO.  %@@%AVAILABLE MENUs:%$$%&&ECHO.&&SET "$FOLD=%MENU_FOLDER%"&&SET "$FILT=*.MENU"&&CALL:FILE_LIST&&ECHO.&&CALL:BOX_RB&&CALL:PAD_LINE&&CALL:PAD_PREV&&SET "FILE_SELECT=1"&&CALL:MENU_SELECT&&CALL:MENU_EDIT&SET "SELECT="
 GOTO:MAIN_MENU
 :IMAGEMGR_RUN
 IF "%PROG_MODE%"=="COMMAND" IF NOT EXIST "%MENU_FOLDER%\%ARG1%" ECHO.&&ECHO. Type menuscript.cmd "NameOfMenu.menu".&&GOTO:QUIT
@@ -27,14 +27,14 @@ CALL:GET_HEAD
 IF DEFINED ERROR GOTO:IMAGEMGR_END
 IF DEFINED CUR_SESSION SET /A "CUR_SESSION+=1"
 IF NOT DEFINED CUR_SESSION SET "CUR_SESSION=1"
-SET "MENU_LAST%CUR_SESSION%=%$CHOICE%"&&SET "NLIST=MENU"&&CALL:MENU_GROUP_VIEW&SET /A "CUR_SESSION-=1"
+SET "MENU_LAST%CUR_SESSION%=%$CHOICE%"&&SET "LIST_DISP=NUM"&&CALL:MENU_GROUP_VIEW&SET /A "CUR_SESSION-=1"
 CALL SET "$CHOICE=%%MENU_LAST%CUR_SESSION%%%"&&SET "MENU_LAST%CUR_SESSION%="&&SET "MENU_RETURN=1"
 :IMAGEMGR_END
 IF "%PROG_MODE%"=="COMMAND" GOTO:QUIT
 IF "%PROG_MODE%"=="PORTABLE" GOTO:MAIN_MENU
 GOTO:QUIT
 :MENU_GROUP_VIEW
-CLS&&CALL:PAD_LINE&&SET "BOX=T1"&&CALL:BOX_DISP&&SET "$LIST=%MENU_FOLDER%\%$CHOICE%"&&SET "$LISTX=%MENU_FOLDER%\%$CHOICE%"&&CALL:LIST_FILE&&SET "BOX=B1"&&CALL:BOX_DISP
+CLS&&CALL:PAD_LINE&&CALL:BOX_RT&&SET "$LIST=%MENU_FOLDER%\%$CHOICE%"&&SET "$LISTX=%MENU_FOLDER%\%$CHOICE%"&&CALL:LIST_FILE&&CALL:BOX_RB
 IF DEFINED ERROR EXIT /B
 CALL:PAD_LINE&&CALL:PAD_PREV&&CALL:MENU_SELECT
 CALL SET "GROUP_TARGET=%%$ITEM%SELECT%%%"
@@ -47,15 +47,25 @@ IF NOT "%%b"=="" CALL SET "$CLM1=%%a"&&CALL SET "$CLM2=%%b"&&CALL:GROUP_EXEC)
 EXIT /B
 :GROUP_EXEC
 IF NOT DEFINED #GO EXIT /B
-IF "%$CLM1%"=="CMD" CALL %$CLM2%
-IF "%$CLM1%"=="CMDX" CALL CMD.EXE /C %$CLM2%
+IF "%$CLM1%"=="CMD" CALL:CMD_ITEM
+IF "%$CLM1%"=="CMDI" CALL:CMDI_ITEM
+IF "%$CLM1%"=="CMDX" CALL:CMDX_ITEM
+EXIT /B
+:CMD_ITEM
+CALL %$CLM2%
+EXIT /B
+:CMDI_ITEM
+%$CLM2%
+EXIT /B
+:CMDX_ITEM
+CALL CMD.EXE /C %$CLM2%
 EXIT /B
 :MENU_EDIT
 IF NOT DEFINED $PICK EXIT /B
 START NOTEPAD "%$PICK%"
 EXIT /B
 :PAD_LINE
-CALL SET "#@=%%XLR%ACC_COLOR%%%"&&CALL SET "##=%%XLR%BTN_COLOR%%%"&&CALL SET "#$=%%XLR%TXT_COLOR%%%"&&IF "%PAD_TYPE%"=="0" ECHO.%#$%&&EXIT /B
+CALL SET "@@=%%XLR%ACC_COLOR%%%"&&CALL SET "##=%%XLR%BTN_COLOR%%%"&&CALL SET "$$=%%XLR%TXT_COLOR%%%"&&IF "%PAD_TYPE%"=="0" ECHO.%$$%&&EXIT /B
 CHCP 65001>NUL
 IF "%PAD_TYPE%"=="0" SET "PADX= "
 IF "%PAD_TYPE%"=="1" SET "PADX=◌"
@@ -72,34 +82,99 @@ IF "%PAD_TYPE%"=="11" SET "PADX=#"
 SET "PAD_SEQX=%PAD_SEQ%"&&IF NOT "%PAD_SEQ%X"=="%PAD_SEQX%X" SET "XNTX=0"&&SET "XLRX="&&FOR /F "DELIMS=" %%G IN ('CMD.EXE /D /U /C ECHO.%PAD_SEQ%^| FIND /V ""') do (CALL SET "XLRX=%%G"&&CALL:COLOR_ASSIGN&&CALL SET /A "XNTX+=1")
 IF "%PAD_SIZE%"=="LARGE" SET "PAD_BLK=%PADX%%PADX%%PADX%%PADX%%PADX%%PADX%%PADX%%PADX%%PADX%%PADX%"
 IF "%PAD_SIZE%"=="SMALL" SET "PAD_BLK=%#0%%PADX%%#1%%PADX%%#2%%PADX%%#3%%PADX%%#4%%PADX%%#5%%PADX%%#6%%PADX%%#7%%PADX%%#8%%PADX%%#9%%PADX%"
-IF "%PAD_SIZE%"=="LARGE" ECHO.%#0%%PAD_BLK%%#1%%PAD_BLK%%#2%%PAD_BLK%%#3%%PAD_BLK%%#4%%PAD_BLK%%#5%%PAD_BLK%%#6%%PAD_BLK%%#$%
-IF "%PAD_SIZE%"=="SMALL" ECHO.%PAD_BLK%%PAD_BLK%%PAD_BLK%%PAD_BLK%%PAD_BLK%%PAD_BLK%%PAD_BLK%%#$%
-SET "#Z=%#$%"&&SET "#0=%#1%"&SET "#1=%#2%"&SET "#2=%#3%"&SET "#3=%#4%"&SET "#4=%#5%"&SET "#5=%#6%"&SET "#6=%#7%"&SET "#7=%#8%"&SET "#8=%#9%"&SET "#9=%#0%"&&SET "PAD_BLK="&&SET "PADX="
+IF "%PAD_SIZE%"=="LARGE" ECHO.%#0%%PAD_BLK%%#1%%PAD_BLK%%#2%%PAD_BLK%%#3%%PAD_BLK%%#4%%PAD_BLK%%#5%%PAD_BLK%%#6%%PAD_BLK%%$$%
+IF "%PAD_SIZE%"=="SMALL" ECHO.%PAD_BLK%%PAD_BLK%%PAD_BLK%%PAD_BLK%%PAD_BLK%%PAD_BLK%%PAD_BLK%%$$%
+SET "#Z=%$$%"&&SET "#0=%#1%"&SET "#1=%#2%"&SET "#2=%#3%"&SET "#3=%#4%"&SET "#4=%#5%"&SET "#5=%#6%"&SET "#6=%#7%"&SET "#7=%#8%"&SET "#8=%#9%"&SET "#9=%#0%"&&SET "PAD_BLK="&&SET "PADX="
 EXIT /B
 :COLOR_ASSIGN
 IF DEFINED XNTX CALL SET "#%XNTX%=%%XLR%XLRX%%%"
 EXIT /B
-:BOX_DISP
+:BOX_RT
 IF "%PAD_BOX%"=="DISABLED" EXIT /B
+CALL:BOX_DISP&ECHO.%##%╭────────────────────────────────────────────────────────────────────╮%$$%&EXIT /B
+:BOX_RB
+IF "%PAD_BOX%"=="DISABLED" EXIT /B
+CALL:BOX_DISP&ECHO.%##%╰────────────────────────────────────────────────────────────────────╯%$$%&EXIT /B
+:BOX_ST
+IF "%PAD_BOX%"=="DISABLED" EXIT /B
+CALL:BOX_DISP&ECHO.%##%┌────────────────────────────────────────────────────────────────────┐%$$%&EXIT /B
+:BOX_SB
+IF "%PAD_BOX%"=="DISABLED" EXIT /B
+CALL:BOX_DISP&ECHO.%##%└────────────────────────────────────────────────────────────────────┘%$$%&EXIT /B
+:BOX_DISP
 CHCP 65001>NUL
 IF NOT DEFINED PAD_BOX SET "PAD_BOX=ENABLED"
-IF "%BOX%"=="T1" ECHO.%##%╭────────────────────────────────────────────────────────────────────╮%#$%
-IF "%BOX%"=="B1" ECHO.%##%╰────────────────────────────────────────────────────────────────────╯%#$%
-IF "%BOX%"=="T2" ECHO.%##%┌────────────────────────────────────────────────────────────────────┐%#$%
-IF "%BOX%"=="B2" ECHO.%##%└────────────────────────────────────────────────────────────────────┘%#$%
-SET "BOX="
+EXIT /B
+:FILE_LIST
+SET "EMPTY_X=1"&&SET "$XNT="&&FOR %%a in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99) DO (IF DEFINED $ITEM%%a SET "$ITEM%%a=")
+IF NOT DEFINED LIST_DISP SET "LIST_DISP=NUM"
+IF EXIST "%$FOLD%\%$FILT%" SET "EMPTY_X="&&FOR /F "TOKENS=*" %%a in ('DIR /A: /B /O:GN "%$FOLD%\%$FILT%"') DO (CALL SET /A "$XNT+=1"&&CALL SET "$CLM$=%%a"&&CALL:FILE_LISTX)
+IF DEFINED EMPTY_X ECHO.  EMPTY..
+FOR %%a in (EMPTY_X LIST_DISP $XNT) DO (SET "%%a=")
+EXIT /B
+:FILE_LISTX
+CALL SET "$ITEM%$XNT%=%$CLM$%"
+IF EXIST "%$FOLD%\%$CLM$%\*" (SET "LIST_CLR1=%@@%"&&SET "LIST_CLR2=%$$%") ELSE (SET "LIST_CLR1="&&SET "LIST_CLR2=")
+IF "%LIST_DISP%"=="NUM" ECHO. %$$%( %##%%$XNT%%$$% ) %LIST_CLR1%%$CLM$%%LIST_CLR2%
+IF "%LIST_DISP%"=="BAS" ECHO.   %LIST_CLR1%%$CLM$%%LIST_CLR2%
+EXIT /B
+:LIST_FILE
+SET "ERROR="&&SET "$XNT="&&FOR %%a in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99) DO (IF DEFINED $ITEM%%a SET "$ITEM%%a=")
+IF NOT EXIST "%$LIST%" GOTO:LIST_ERROR
+IF NOT DEFINED LIST_DISP SET "LIST_DISP=NUM"
+SET "HEAD_CHECK=%$LIST%"&&CALL:GET_HEAD
+IF DEFINED ERROR CALL:PAUSED&GOTO:LIST_ERROR
+COPY /Y "%$LIST%" "$MENU">NUL 2>&1
+FOR %%a in (0 1 2 3 4 5 6 7 8 9) DO (IF DEFINED MENUT%%a CALL ECHO.%%MENUT%%a%%&&SET "MENUT%%a=")
+FOR /F "TOKENS=1-1* SKIP=1 DELIMS=[] " %%1 in ($MENU) DO (IF NOT "%%1"=="" CALL SET "$CLM1=%%1"&&CALL SET "$CLM2=%%2"&&CALL:LIST_FILEX)
+:LIST_ERROR
+FOR %%a in (0 1 2 3 4 5 6 7 8 9) DO (IF DEFINED MENUB%%a CALL ECHO.%%MENUB%%a%%&&SET "MENUB%%a=")
+FOR %%a in ($LIST $CLM1 $CLM2 LIST_DISP $XNT) DO (SET "%%a=")
+IF EXIST "$MENU" DEL /Q /F "$MENU">NUL 2>&1
+EXIT /B
+:LIST_FILEX
+IF "%$CLM1%"=="DSP" CALL:DSP_ITEM
+IF "%$CLM1%"=="DSPI" CALL:DSPI_ITEM
+IF "%$CLM1%"=="DSPX" CALL:DSPX_ITEM
+IF NOT "%$CLM1%"=="GROUP" EXIT /B
+IF "%LIST_DISP%"=="BAS" ECHO.   %$CLM2%&EXIT /B
+CALL SET /A "$XNT+=1"
+CALL SET $ITEM%$XNT%=%$CLM2%
+CALL ECHO. %$$%( %##%%$XNT%%$$% ) %$CLM2%%$$%
+EXIT /B
+:DSP_ITEM
+CALL %$CLM2%
+EXIT /B
+:DSPI_ITEM
+%$CLM2%
+EXIT /B
+:DSPX_ITEM
+CALL CMD.EXE /C %$CLM2%
 EXIT /B
 :MENU_SELECT
-CALL:PROMPT_SET
-SET "$CHOICE="&&CALL SET "$CHOICE=%%$ITEM%SELECT%%%"
-EXIT /B
-:PROMPT_SET
-IF EXIST "%MODULE_FOLDER%\PROMPTSET.CMD" CALL "%MODULE_FOLDER%\PROMPTSET.CMD"
-IF NOT EXIST "%MODULE_FOLDER%\PROMPTSET.CMD" SET "SELECT="&&SET /P "SELECT=$>>"
-IF NOT EXIST "%MODULE_FOLDER%\PROMPTSET.CMD" SET "CAPS_SET=SELECT"&&SET "CAPS_VAR=%SELECT%"&&CALL:CAPS_SET
-EXIT /B
-:CHAR_CHK
-FOR %%a in (CHAR_STR CHAR_CHK) DO (IF NOT DEFINED %%a EXIT /B)
+IF NOT DEFINED CASE SET "CASE=UPPER"
+IF NOT DEFINED CHECK SET "CHECK=MENU"
+IF NOT DEFINED SELECT_OUT SET "SELECT_OUT=SELECT"
+SET "ERROR="&&SET "%SELECT_OUT%="&&SET "SELECT_VAR="&&SET /P "SELECT_VAR=$>>"
+IF "%FADE_OUT%"=="GRAY" COLOR 08
+IF "%FADE_OUT%"=="TAN" COLOR 06
+IF NOT DEFINED SELECT_VAR SET "ERROR=1"
+IF NOT DEFINED ERROR SET "SELECT_VAR=%SELECT_VAR:"=%"
+IF NOT DEFINED ERROR SET "CHECK_VAR=%SELECT_VAR%"&&CALL:CHECK
+IF NOT DEFINED ERROR IF "%CASE%"=="ANY" SET "%SELECT_OUT%=%SELECT_VAR%"
+IF NOT DEFINED ERROR FOR %%$ in (UPPER LOWER) DO (IF "%%$"=="%CASE%" SET "CAPS_SET=%SELECT_OUT%"&&SET "CAPS_VAR=%SELECT_VAR%"&&CALL:CAPS_SET)
+FOR %%a in (SELECT_VAR %SELECT_OUT%) DO (IF NOT DEFINED %%a SET "ERROR=1")
+IF "%SELECT_VAR%"=="=" SET "ERROR=1"
+IF DEFINED ERROR SET "%SELECT_OUT%="&&IF DEFINED VERBOSE FOR /F "TOKENS=*" %%a in ("%SELECT_VAR% ") DO (ECHO. %XLR4%ERROR:%$$% input [ %XLR4%%%a%$$%] is invalid)
+FOR %%a in ($CHOICE CASE CHECK INPUT OUTPUT SELECT_OUT SELECT_VAR VERBOSE) DO (SET "%%a=")
+ECHO.%$$%&&CALL SET "$CHOICE=%%$ITEM%SELECT%%%"
+IF NOT DEFINED FILE_SELECT EXIT /B
+FOR %%a in (FILE_SELECT $PICK $PATH $BODY $EXT) DO (SET "%%a=")
+IF NOT DEFINED $CHOICE SET "ERROR=1"&&EXIT /B
+IF NOT EXIST "%$FOLD%\%$CHOICE%" SET "ERROR=1"&&EXIT /B
+IF EXIST "%$FOLD%\%$CHOICE%" SET "$PICK=%$FOLD%\%$CHOICE%"
+IF NOT DEFINED ERROR FOR %%G in ("%$PICK%") DO (SET "$PATH=%%~dG%%~pG"&&SET "$BODY=%%~nG"&&SET "$EXT=%%~xG")
+IF NOT DEFINED ERROR FOR %%G in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) DO (CALL SET "$PATH=%%$PATH:%%G=%%G%%"&&CALL SET "$BODY=%%$BODY:%%G=%%G%%"&&CALL SET "$EXT=%%$EXT:%%G=%%G%%")
 EXIT /B
 :CAPS_SET
 IF NOT DEFINED CAPS_VAR SET "%CAPS_SET%="&&SET "CAPS_SET="&&SET "CAPS_VAR="&&SET "CASE="&&EXIT /B
@@ -109,6 +184,20 @@ IF "%CASE%"=="UPPER" FOR %%G in (A B C D E F G H I J K L M N O P Q R S T U V W X
 IF "%CAPS_VAR%"=="a=a" SET "CAPS_VAR="
 IF "%CAPS_VAR%"=="A=A" SET "CAPS_VAR="
 CALL SET "%CAPS_SET%=%CAPS_VAR%"&&SET "CAPS_SET="&&SET "CAPS_VAR="&&SET "CASE="
+EXIT /B
+:CHECK
+SET "ERROR="&&IF NOT DEFINED CHECK_VAR SET "ERROR=1"
+IF "%CHECK%"=="NUM" SET "CHECK_FLT=0 1 2 3 4 5 6 7 8 9 ^""
+IF "%CHECK%"=="LTR" SET "CHECK_FLT=A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z ^""
+IF "%CHECK%"=="ALPHA" SET "CHECK_FLT=0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z ^""
+IF "%CHECK%"=="MENU" SET "CHECK_FLT=0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z @ # $ . - _ + = ~ ^* ^""
+IF "%CHECK%"=="MOST" SET "CHECK_FLT=0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z @ # $ ^\ ^/ ^: ^( ^) ^[ ^] ^{ ^} ^. ^- ^_ ^+ ^= ^~ ^* ^%% ^""
+IF NOT DEFINED ERROR FOR /F "DELIMS=" %%$ in ('CMD.EXE /D /U /C ECHO."%CHECK_VAR%"^| FIND /V ""') do (SET "$GO="&&FOR %%a in (%CHECK_FLT%) DO (
+IF "[%%$]"=="[*]" IF NOT DEFINED NO_ASTRK SET "$GO=1"
+IF "[%%$]"=="[ ]" IF NOT DEFINED NO_SPACE SET "$GO=1"
+IF "[%%a]"=="[%%$]" SET "$GO=1")
+IF NOT DEFINED $GO SET "ERROR=1")
+FOR %%a in (CHECK INPUT OUTPUT CHECK_VAR CHECK_FLT NO_SPACE NO_ASTRK) DO (SET "%%a=")
 EXIT /B
 :GET_INIT
 SET "ERR_MSG="&&FOR %%G in ("%ORIG_CMD%") DO (SET "ORIG_CMD=%%~nG%%~xG")
@@ -135,7 +224,7 @@ SET "VER_CHK="&&SET "VER_GET="&&SET "VER_SET="&&EXIT /B
 SET "$HEAD="&&IF NOT DEFINED HEAD_CHECK EXIT /B
 SET /P $HEAD=<"%HEAD_CHECK%"
 IF NOT "%$HEAD%"=="MENU-LIST" SET "ERROR=1"
-IF DEFINED ERROR ECHO.&&ECHO. %XLR2%ERROR:%#$% Bad file header, check file.&&ECHO.
+IF DEFINED ERROR ECHO.&&ECHO. %XLR2%ERROR:%$$% Bad file header, check file.&&ECHO.
 SET "HEAD_CHECK="&&EXIT /B
 :TIMER
 FOR /F "TOKENS=3 DELIMS=:." %%a in ("%TIME%") DO (IF NOT "%%a"=="%TIMER_LAST%" SET "TIMER_LAST=%%a"&&SET /A "TIMER-=1"&&IF DEFINED TIMER_MSG CLS&&CALL ECHO.%TIMER_MSG%)
@@ -150,10 +239,10 @@ IF NOT EXIST "$*" EXIT /B
 FOR %%G in (MENU DSK) DO (IF EXIST "$%%G*" DEL /Q /F "$%%G*">NUL 2>&1)
 EXIT /B
 :PAD_PREV
-ECHO.               Press (%##%Enter%#$%) to return to previous menu
+ECHO.               Press (%##%Enter%$$%) to return to previous menu
 EXIT /B
 :PAUSED
-IF NOT DEFINED NO_PAUSE SET /P "PAUSED=.                      Press (%##%Enter%#$%) to continue..."
+IF NOT DEFINED NO_PAUSE SET /P "PAUSED=.                      Press (%##%Enter%$$%) to continue..."
 SET "NO_PAUSE="&&EXIT /B
 :SETS_HANDLER
 SET "PROG_SOURCE=%PROG_FOLDER%"&&IF NOT DEFINED PROG_FOLDER0 SET "PROG_FOLDER0=%PROG_FOLDER%"
@@ -162,82 +251,22 @@ IF NOT DEFINED PAD_TYPE SET "PAD_TYPE=1"
 IF NOT DEFINED ACC_COLOR SET "ACC_COLOR=4"
 IF NOT DEFINED BTN_COLOR SET "BTN_COLOR=2"
 IF NOT DEFINED TXT_COLOR SET "TXT_COLOR=0"
+IF NOT DEFINED FADE_OUT SET "FADE_OUT=GRAY"
 IF NOT DEFINED PAD_SIZE SET "PAD_SIZE=LARGE"
 IF NOT DEFINED PAD_SEQ SET "PAD_SEQ=6666622222"
 ECHO.MenuScript v %VER_CUR% Settings>"settings.ini"
-FOR %%a in (PAD_BOX PAD_TYPE PAD_SIZE PAD_SEQ TXT_COLOR ACC_COLOR BTN_COLOR FOLDER_MODE) DO (CALL ECHO.%%a=%%%%a%%>>"settings.ini")
+FOR %%a in (PAD_BOX PAD_TYPE PAD_SIZE PAD_SEQ TXT_COLOR ACC_COLOR BTN_COLOR FADE_OUT FOLDER_MODE) DO (CALL ECHO.%%a=%%%%a%%>>"settings.ini")
 SET "FOLDER_MODE=UNIFIED"&&IF EXIST "%PROG_SOURCE%\MODULE" IF EXIST "%PROG_SOURCE%\MENU" SET "FOLDER_MODE=ISOLATED"
 IF "%FOLDER_MODE%"=="ISOLATED" FOR %%a in (MODULE MENU) DO (SET "%%a_FOLDER=%PROG_SOURCE%\%%a")
 IF "%FOLDER_MODE%"=="UNIFIED" FOR %%a in (MODULE MENU) DO (SET "%%a_FOLDER=%PROG_SOURCE%")
 IF NOT DEFINED XLR0 SET "XLR0=[97m"&&SET "XLR1=[31m"&&SET "XLR2=[91m"&&SET "XLR3=[33m"&&SET "XLR4=[93m"&&SET "XLR5=[92m"&&SET "XLR6=[96m"&&SET "XLR7=[94m"&&SET "XLR8=[34m"&&SET "XLR9=[95m"&&CALL:PAD_LINE>NUL 2>&1
-FOR %%a in (ERROR $HALT $HALTX $CHOICE $PICK) DO (SET "%%a=")
-EXIT /B
-:FILE_PICK
-IF NOT DEFINED PICK GOTO:PICK_ERROR
-IF NOT DEFINED NOCLS CLS
-IF NOT DEFINED NOPAD CALL:PAD_LINE
-SET "BOX=T1"&&CALL:BOX_DISP&&SET "NLIST=%PICK%"&&CALL:FILE_LIST&&SET "BOX=B1"&&CALL:BOX_DISP&&IF NOT DEFINED NOPAD CALL:PAD_LINE
-FOR %%a in (ERROR SELECT $PICK $CHOICE $HEAD $PICK_PATH $PICK_BODY $PICK_EXT FILE_NAME NOCLS NOPAD) DO (SET "%%a=")
-CALL:PAD_PREV&&CALL:MENU_SELECT
-IF "%SELECT%" GTR "9999999" SET "ERROR=1"
-IF "%SELECT%" LSS "0" SET "ERROR=1"
-IF DEFINED ERROR GOTO:PICK_ERROR
-IF NOT DEFINED $CHOICE SET "ERROR=1"&&GOTO:PICK_ERROR
-IF NOT DEFINED $FOLD_X SET "ERROR=1"&&GOTO:PICK_ERROR
-IF NOT EXIST "%$FOLD_X%\%$CHOICE%" SET "ERROR=1"&&GOTO:PICK_ERROR
-IF EXIST "%$FOLD_X%\%$CHOICE%" SET "$PICK=%$FOLD_X%\%$CHOICE%"
-IF "%PICK%"=="MENU" SET "HEAD_CHECK=%$PICK%"&&CALL:GET_HEAD
-IF DEFINED ERROR CALL:PAUSED
-:PICK_ERROR
-IF NOT DEFINED ERROR FOR %%G in ("%$PICK%") DO (SET "$PICK_PATH=%%~dG%%~pG"&&SET "$PICK_BODY=%%~nG"&&SET "$PICK_EXT=%%~xG")
-IF NOT DEFINED ERROR FOR %%G in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) DO (CALL SET "$PICK_PATH=%%$PICK_PATH:%%G=%%G%%"&&CALL SET "$PICK_BODY=%%$PICK_BODY:%%G=%%G%%"&&CALL SET "$PICK_EXT=%%$PICK_EXT:%%G=%%G%%")
-SET "PICK="&&IF DEFINED ERROR SET "$PICK="
-EXIT /B
-:FILE_LIST
-SET "EMPTY_X=1"&&SET "$FOLD_X="&&SET "$FILT_X="&&SET "$XNT="&&FOR %%a in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99) DO (IF DEFINED $ITEM%%a SET "$ITEM%%a=")
-FOR %%a in (BLIST NLIST) DO (IF DEFINED %%a CALL SET "EXT=%%%%a%%")
-IF "%EXT%"=="MENU" SET "$FOLD_X=%MENU_FOLDER%"&&SET "$FILT_X=*.%EXT%"
-IF "%EXT%"=="CUST" SET "$FOLD_X=%$FOLD0%"&&SET "$FILT_X=%$FILT0%"
-FOR %%a in (0 1 2 3 4 5 6 7 8 9) DO (IF DEFINED MENUT%%a CALL ECHO.%%MENUT%%a%%&&SET "MENUT%%a=")
-IF EXIST "%$FOLD_X%\%$FILT_X%" SET "EMPTY_X="&&FOR /F "TOKENS=*" %%a in ('DIR /A: /B /O:GN "%$FOLD_X%\%$FILT_X%"') DO (CALL SET /A "$XNT+=1"&&CALL SET "$CLM$=%%a"&&CALL:FILE_LISTX)
-IF DEFINED EMPTY_X ECHO.  EMPTY..
-FOR %%a in (0 1 2 3 4 5 6 7 8 9) DO (IF DEFINED MENUB%%a CALL ECHO.%%MENUB%%a%%&&SET "MENUB%%a=")
-FOR %%a in (EMPTY_X EXT BLIST NLIST $XNT) DO (SET "%%a=")
-EXIT /B
-:FILE_LISTX
-CALL SET "$ITEM%$XNT%=%$CLM$%"
-IF EXIST "%$FOLD_X%\%$CLM$%\*" (SET "LIST_CLR1=%#@%"&&SET "LIST_CLR2=%#$%") ELSE (SET "LIST_CLR1="&&SET "LIST_CLR2=")
-IF DEFINED NLIST ECHO. ( %##%%$XNT%%#$% ) %LIST_CLR1%%$CLM$%%LIST_CLR2%
-IF DEFINED BLIST ECHO.   %LIST_CLR1%%$CLM$%%LIST_CLR2%
-EXIT /B
-:LIST_FILE
-SET "ERROR="&&SET "$XNT="&&FOR %%a in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99) DO (IF DEFINED $ITEM%%a SET "$ITEM%%a=")
-IF NOT DEFINED BLIST IF NOT DEFINED NLIST GOTO:LIST_ERROR
-IF NOT EXIST "%$LIST%" GOTO:LIST_ERROR
-FOR %%a in (BLIST NLIST) DO (IF DEFINED %%a CALL SET "EXT=%%%%a%%")
-SET "HEAD_CHECK=%$LIST%"&&CALL:GET_HEAD
-IF DEFINED ERROR CALL:PAUSED&GOTO:LIST_ERROR
-COPY /Y "%$LIST%" "$MENU">NUL 2>&1
-FOR %%a in (0 1 2 3 4 5 6 7 8 9) DO (IF DEFINED MENUT%%a CALL ECHO.%%MENUT%%a%%&&SET "MENUT%%a=")
-FOR /F "TOKENS=1-1* SKIP=1 DELIMS=[] " %%1 in ($MENU) DO (IF NOT "%%1"=="" CALL SET "$CLM1=%%1"&&CALL SET "$CLM2=%%2"&&CALL:LIST_FILEX)
-:LIST_ERROR
-FOR %%a in (0 1 2 3 4 5 6 7 8 9) DO (IF DEFINED MENUB%%a CALL ECHO.%%MENUB%%a%%&&SET "MENUB%%a=")
-FOR %%a in ($LIST $CLM1 $CLM2 EXT BLIST NLIST $XNT) DO (SET "%%a=")
-IF EXIST "$MENU" DEL /Q /F "$MENU">NUL 2>&1
-EXIT /B
-:LIST_FILEX
-IF "%$CLM1%"=="DSP" CALL %$CLM2%
-IF "%$CLM1%"=="DSPX" CALL CMD.EXE /C %$CLM2%
-IF NOT "%$CLM1%"=="GROUP" EXIT /B
-CALL SET /A "$XNT+=1"
-CALL SET $ITEM%$XNT%=%$CLM2%
-CALL ECHO. %#$%( %##%%$XNT%%#$% ) %$CLM2%%#$%
+FOR %%a in (ERROR $HALT $HALTX $CHOICE $PICK $FOLD $FILT) DO (SET "%%a=")
 EXIT /B
 ::#########################################################################
 :SETTINGS_MENU
 ::#########################################################################
-CLS&&CALL:SETS_HANDLER&&CALL:PAD_LINE&&SET "BOX=T1"&&CALL:BOX_DISP&&ECHO.                        Settings Configuration&&ECHO.
-ECHO. (%##%1%#$%) Appearance&&ECHO. (%##%2%#$%) Folder Mode  %#@%%FOLDER_MODE%%#$%&&ECHO.&&SET "BOX=B1"&&CALL:BOX_DISP&&CALL:PAD_LINE
+CLS&&CALL:SETS_HANDLER&&CALL:PAD_LINE&&CALL:BOX_RT&&ECHO.                        Settings Configuration&&ECHO.
+ECHO. (%##%1%$$%) Appearance&&ECHO. (%##%2%$$%) Folder Mode  %@@%%FOLDER_MODE%%$$%&&ECHO.&&CALL:BOX_RB&&CALL:PAD_LINE
 CALL:PAD_PREV&&CALL:MENU_SELECT
 IF NOT DEFINED SELECT GOTO:MAIN_MENU
 IF "%SELECT%"=="1" GOTO:APPEARANCE
@@ -257,8 +286,8 @@ FOR %%a in (MENU) DO (IF EXIST "%PROG_SOURCE%\*.%%a" MOVE /Y "%PROG_SOURCE%\*.%%
 FOR /F "TOKENS=*" %%a in ('DIR /A: /B /O:GN "%PROG_SOURCE%\*.CMD"') DO (IF NOT "%%a"=="%ORIG_CMD%" MOVE /Y "%PROG_SOURCE%\%%a" "%PROG_SOURCE%\MODULE">NUL 2>&1)
 EXIT /B
 :APPEARANCE
-CLS&&CALL:SETS_HANDLER&&CALL:PAD_LINE&&SET "BOX=T1"&&CALL:BOX_DISP&&ECHO.                              Appearance&&ECHO.
-ECHO. (%##%1%#$%) Pad Type           %#@%PAD %PAD_TYPE%%#$%&&ECHO. (%##%2%#$%) Pad Size           %#@%%PAD_SIZE%%#$%&&ECHO. (%##%7%#$%) Pad Box            %#@%%PAD_BOX%%#$%&&ECHO. (%##%3%#$%) Pad Sequence       %#@%%PAD_SEQ%%#$%&&CALL ECHO. (%##%4%#$%) Text Color         %#@%COLOR %%XLR%TXT_COLOR%%%%TXT_COLOR%%#$%&&CALL ECHO. (%##%5%#$%) Accent Color       %#@%COLOR %%XLR%ACC_COLOR%%%%ACC_COLOR%%#$%&&CALL ECHO. (%##%6%#$%) Button Color       %#@%COLOR %%XLR%BTN_COLOR%%%%BTN_COLOR%%#$%&&ECHO.&&ECHO.                         Color ( %##%-%#$% / %##%+%#$% ) Shift&&SET "BOX=B1"&&CALL:BOX_DISP&&CALL:PAD_LINE
+CLS&&CALL:SETS_HANDLER&&CALL:PAD_LINE&&CALL:BOX_RT&&ECHO.                              Appearance&&ECHO.
+ECHO. (%##%1%$$%) Pad Type           %@@%PAD %PAD_TYPE%%$$%&&ECHO. (%##%2%$$%) Pad Size           %@@%%PAD_SIZE%%$$%&&ECHO. (%##%3%$$%) Pad Sequence       %@@%%PAD_SEQ%%$$%&&CALL ECHO. (%##%4%$$%) Text Color         %@@%COLOR %%XLR%TXT_COLOR%%%%TXT_COLOR%%$$%&&CALL ECHO. (%##%5%$$%) Accent Color       %@@%COLOR %%XLR%ACC_COLOR%%%%ACC_COLOR%%$$%&&CALL ECHO. (%##%6%$$%) Button Color       %@@%COLOR %%XLR%BTN_COLOR%%%%BTN_COLOR%%$$%&&CALL ECHO. (%##%7%$$%) Fade Out           %@@%%FADE_OUT%%$$%&&ECHO. (%##%8%$$%) Pad Box            %@@%%PAD_BOX%%$$%&&ECHO.&&ECHO.                         Color ( %##%-%$$% / %##%+%$$% ) Shift&&CALL:BOX_RB&&CALL:PAD_LINE
 CALL:PAD_PREV&&CALL:MENU_SELECT
 IF DEFINED HOST_ERROR GOTO:MAIN_MENU
 IF NOT DEFINED SELECT GOTO:SETTINGS_MENU
@@ -267,23 +296,26 @@ IF "%SELECT%"=="-" CALL:COLOR_SHIFT_PAD&SET "SELECT="
 IF "%SELECT%"=="1" CALL:PAD_TYPE&SET "SELECT="
 IF "%SELECT%"=="2" IF "%PAD_SIZE%"=="LARGE" SET "PAD_SIZE=SMALL"&SET "SELECT="
 IF "%SELECT%"=="2" IF "%PAD_SIZE%"=="SMALL" SET "PAD_SIZE=LARGE"&SET "SELECT="
-IF "%SELECT%"=="3" CALL:PAD_LINE&&SET "BOX=T1"&&CALL:BOX_DISP&&ECHO.&&ECHO.                  Enter 10 digit color sequence seed&&ECHO.&&ECHO.                   [ %XLR0%0%XLR1%1%XLR2%2%XLR3%3%XLR4%4%XLR5%5%XLR6%6%XLR7%7%XLR8%8%XLR9%9%#$% ]    [ %XLR1%11%XLR2%22%XLR3%33%XLR4%44%XLR5%55%#$% ]&&ECHO.&&SET "BOX=B1"&&CALL:BOX_DISP&&CALL:PAD_LINE&&SET "PROMPT_SET=COLOR_XXX"&&CALL:PROMPT_SET
+IF "%SELECT%"=="3" CALL:PAD_LINE&&CALL:BOX_RT&&ECHO.&&ECHO.                  Enter 10 digit color sequence seed&&ECHO.&&ECHO.                   [ %XLR0%0%XLR1%1%XLR2%2%XLR3%3%XLR4%4%XLR5%5%XLR6%6%XLR7%7%XLR8%8%XLR9%9%$$% ]    [ %XLR1%11%XLR2%22%XLR3%33%XLR4%44%XLR5%55%$$% ]&&ECHO.&&CALL:BOX_RB&&CALL:PAD_LINE&&SET "SELECT_OUT=COLOR_XXX"&&CALL:MENU_SELECT
 IF "%SELECT%"=="3" IF "%COLOR_XXX%"=="-" SET "PAD_SEQ=6666600000"&SET "SELECT="
 IF "%SELECT%"=="3" SET "XNTX="&&FOR /F "DELIMS=" %%G IN ('CMD.EXE /D /U /C ECHO.%COLOR_XXX%^| FIND /V ""') do (CALL SET /A "XNTX+=1")
 IF "%SELECT%"=="3" IF "%XNTX%"=="10" SET "PAD_SEQ=%COLOR_XXX%"&&SET "COLOR_XXX="&SET "SELECT="
 IF "%SELECT%"=="4" SET "COLOR_TMP=TXT_COLOR"&&CALL:COLOR_CHOICE&SET "SELECT="
 IF "%SELECT%"=="5" SET "COLOR_TMP=ACC_COLOR"&&CALL:COLOR_CHOICE&SET "SELECT="
 IF "%SELECT%"=="6" SET "COLOR_TMP=BTN_COLOR"&&CALL:COLOR_CHOICE&SET "SELECT="
-IF "%SELECT%"=="7" IF "%PAD_BOX%"=="DISABLED" SET "PAD_BOX=ENABLED"&SET "SELECT="
-IF "%SELECT%"=="7" IF "%PAD_BOX%"=="ENABLED" SET "PAD_BOX=DISABLED"&SET "SELECT="
+IF "%SELECT%"=="7" IF "%FADE_OUT%"=="GRAY" SET "FADE_OUT=TAN"&SET "SELECT="
+IF "%SELECT%"=="7" IF "%FADE_OUT%"=="TAN" SET "FADE_OUT=DISABLED"&SET "SELECT="
+IF "%SELECT%"=="7" IF "%FADE_OUT%"=="DISABLED" SET "FADE_OUT=GRAY"&SET "SELECT="
+IF "%SELECT%"=="8" IF "%PAD_BOX%"=="DISABLED" SET "PAD_BOX=ENABLED"&SET "SELECT="
+IF "%SELECT%"=="8" IF "%PAD_BOX%"=="ENABLED" SET "PAD_BOX=DISABLED"&SET "SELECT="
 GOTO:APPEARANCE
 :PAD_TYPE
 CHCP 65001>NUL
-CLS&&CALL:PAD_LINE&&SET "BOX=T1"&&CALL:BOX_DISP&&ECHO.&&ECHO.                           Choose a pad type&&ECHO.&&ECHO.   (%##%0%#$%)None (%##%1%#$%)◌ (%##%2%#$%)○ (%##%3%#$%)● (%##%4%#$%)□ (%##%5%#$%)■ (%##%6%#$%)░ (%##%7%#$%)▒ (%##%8%#$%)▓ (%##%9%#$%)~ (%##%10%#$%)= (%##%11%#$%)&&ECHO.&&SET "BOX=B1"&&CALL:BOX_DISP&&CALL:PAD_LINE&&CALL:PAD_PREV&&SET "PROMPT_SET=SELECTX"&&CALL:PROMPT_SET
+CLS&&CALL:PAD_LINE&&CALL:BOX_RT&&ECHO.&&ECHO.                           Choose a pad type&&ECHO.&&ECHO.   (%##%0%$$%)None (%##%1%$$%)◌ (%##%2%$$%)○ (%##%3%$$%)● (%##%4%$$%)□ (%##%5%$$%)■ (%##%6%$$%)░ (%##%7%$$%)▒ (%##%8%$$%)▓ (%##%9%$$%)~ (%##%10%$$%)= (%##%11%$$%)&&ECHO.&&CALL:BOX_RB&&CALL:PAD_LINE&&CALL:PAD_PREV&&SET "SELECT_OUT=SELECTX"&&CALL:MENU_SELECT
 FOR %%a in (0 1 2 3 4 5 6 7 8 9 10 11) DO (IF "%SELECTX%"=="%%a" SET "PAD_TYPE=%SELECTX%")
 EXIT /B
 :COLOR_CHOICE
-CALL:PAD_LINE&&SET "BOX=T1"&&CALL:BOX_DISP&&ECHO.&&ECHO.                            Choose a color&&ECHO.&&ECHO.                  [ %XLR0% 0 %XLR1% 1 %XLR2% 2 %XLR3% 3 %XLR4% 4 %XLR5% 5 %XLR6% 6 %XLR7% 7 %XLR8% 8 %XLR9% 9 %#$% ]&&ECHO.&&SET "BOX=B1"&&CALL:BOX_DISP&&CALL:PAD_LINE&&CALL:PAD_PREV&&SET "PROMPT_SET=SELECTX"&&CALL:PROMPT_SET
+CALL:PAD_LINE&&CALL:BOX_RT&&ECHO.&&ECHO.                            Choose a color&&ECHO.&&ECHO.                  [ %XLR0% 0 %XLR1% 1 %XLR2% 2 %XLR3% 3 %XLR4% 4 %XLR5% 5 %XLR6% 6 %XLR7% 7 %XLR8% 8 %XLR9% 9 %$$% ]&&ECHO.&&CALL:BOX_RB&&CALL:PAD_LINE&&CALL:PAD_PREV&&SET "SELECT_OUT=SELECTX"&&CALL:MENU_SELECT
 FOR %%a in (0 1 2 3 4 5 6 7 8 9) DO (IF "%SELECTX%"=="%%a" SET "%COLOR_TMP%=%SELECTX%")
 SET "COLOR_TMP="&&EXIT /B
 :COLOR_SHIFT_PAD
@@ -302,4 +334,5 @@ SET /A "XXX_XXX+=1"&&IF "%XXX_XXX%"=="9" SET "XXX_XXX=0"
 SET "PAD_SHIFT=%PAD_SHIFT%%XXX_XXX%"
 EXIT /B
 :QUIT
-COLOR&CD /D "%ORIG_CD%"&IF DEFINED MENU_RETURN SET "MENU_RETURN="&IF DEFINED $CHOICE menuscript.cmd %$CHOICE%
+CD /D "%ORIG_CD%"&IF DEFINED MENU_RETURN SET "MENU_RETURN="&IF DEFINED $CHOICE menuscript.cmd %$CHOICE%
+EXIT /B
