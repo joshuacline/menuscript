@@ -1,0 +1,28 @@
+MENU-SCRIPT
+::Clear screen
+::CLS
+::Displays padline
+CALL:PAD_LINE
+::Displays round box top
+CALL:BOX_RT
+::Menu content
+ECHO.                               File List
+ECHO.
+::Options for file list (required)
+SET $FOLD=%MENU_FOLDER%
+SET $FILT=*.MENU
+::Optional for non-numbered file list
+::SET $DISP=BAS
+::Opens file list with the specified options.
+CALL:FILE_LIST
+ECHO.
+::Displays round box botttom
+CALL:BOX_RB
+::Displays padline
+CALL:PAD_LINE
+::Displays Press enter to return to previous menu
+CALL:PAD_PREV
+::Opens menu selection prompt with default options + pick file
+CALL:MENU_SELECT
+ECHO. $PICK: %$PICK%    $CHOICE: %$CHOICE%
+PAUSE

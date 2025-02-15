@@ -1,0 +1,39 @@
+MENU-SCRIPT
+::Clear screen
+::CLS
+::The following options are not required for using the menu selection prompt.
+::All options can be combined into a single line.
+::Example SET $SELECT=TEST123&SET CASE=LOWER&SET CHECK=MOST
+
+::Select output sets variable name for a menu selection prompt. Defaults output to %SELECT% when $SELECT is not specified.
+SET $SELECT=TEST123
+::Options for character checking are NUM LTR ALPHA MENU MOST. Default is MENU when $CHECK is not specified.
+SET $CHECK=ALPHA
+:::Displays error message when an invalid character is entered. 
+SET VERBOSE=1
+::Options for case output are LOWER UPPER ANY. Default is UPPER when $CASE is not specified.
+SET $CASE=UPPER
+::Additional options are NO_ASTRK and NO_SPACE. Default is allowed.
+SET NO_ASTRK=1
+SET NO_SPACE=1
+::Displays padline
+CALL:PAD_LINE
+::Displays round box top
+CALL:BOX_RT
+::Menu content
+ECHO.
+ECHO.             CASE mode is: %$CASE%   Check mode is: %$CHECK%
+ECHO.
+ECHO.                             Type something
+ECHO.
+::Displays round box botttom
+CALL:BOX_RB
+::Displays padline
+CALL:PAD_LINE
+::Displays Press enter to return to previous menu
+CALL:PAD_PREV
+::Opens menu selection prompt with the specified options.
+CALL:MENU_SELECT
+::Text Color= %$$%   Button Color= %##%   Accent Color= %@@%  
+IF DEFINED TEST123 ECHO. Output:%@@% %TEST123% %$$%
+PAUSE
