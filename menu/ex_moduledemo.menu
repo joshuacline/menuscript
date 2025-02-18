@@ -1,0 +1,27 @@
+MENU-SCRIPT
+::Clear screen
+::CLS
+::Displays padline
+CALL "%MODULE_FOLDER%\PADLINE.CMD"
+::Displays round box top
+SET $BOX=RT&&CALL "%MODULE_FOLDER%\BOXDISP.CMD"
+::Menu content
+ECHO.                        This is ex_moduledemo.menu
+ECHO.
+ECHO. %$$%(%##% 1 %$$%) File Management Module
+ECHO. %$$%(%##% 2 %$$%) Disklist Module
+ECHO.
+::Option $BOX (required for module BOXDISP.CMD)
+::Round Top= RT   Round Bottom= RB   Square Top= ST   Square Bottom= SB   
+::Displays round box bottom
+SET $BOX=RB&&CALL "%MODULE_FOLDER%\BOXDISP.CMD"
+::Displays padline
+CALL "%MODULE_FOLDER%\PADLINE.CMD"
+::Displays Press enter to return to previous menu
+CALL:PAD_PREV
+::Opens menu selection prompt with the default options.
+CALL "%MODULE_FOLDER%\MENUSELECT.CMD"
+
+::Menu loop ($LOOP) is enabled for option 1 since a .menu file is not loaded
+IF "%SELECT%"=="1" SET "$LOOP=1"&&CALL "%MODULE_FOLDER%\FILEMANAGEMENT.CMD"
+IF "%SELECT%"=="2" CALL menuscript.cmd ex_disklist.menu

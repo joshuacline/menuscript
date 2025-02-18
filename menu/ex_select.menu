@@ -32,7 +32,7 @@ CALL:BOX_RB
 CALL:PAD_LINE
 ::Displays Press enter to return to previous menu
 CALL:PAD_PREV
-::Opens menu selection prompt with the specified options.
+::Opens menu selection prompt with the default options.
 CALL:MENU_SELECT
 ::Text Color= %$$%   Button Color= %##%   Accent Color= %@@%  
 IF DEFINED TEST123 ECHO. Output:%@@% %TEST123% %$$%

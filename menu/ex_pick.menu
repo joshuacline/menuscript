@@ -22,7 +22,7 @@ CALL:BOX_RB
 CALL:PAD_LINE
 ::Displays Press enter to return to previous menu
 CALL:PAD_PREV
-::Opens menu selection prompt with default options + pick file
+::Opens menu selection prompt with the default options + pick file
 CALL:MENU_SELECT
 ECHO. $PICK: %$PICK%    $CHOICE: %$CHOICE%
 PAUSE

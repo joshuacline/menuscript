@@ -9,9 +9,9 @@ CALL:BOX_RT
 ECHO.                         This is ex_menu.menu
 ECHO.
 ::Text Color= %$$%   Button Color= %##%   Accent Color= %@@%  
-ECHO. %$$%(%##% 1 %$$%) Submenu
-ECHO. %$$%(%##% 2 %$$%) File Picker
-ECHO. %$$%(%##% 3 %$$%) Menu Select
+ECHO. %$$%(%##% 1 %$$%) File Picker
+ECHO. %$$%(%##% 2 %$$%) Menu Select
+ECHO. %$$%(%##% 3 %$$%) ex_moduledemo.menu
 ECHO.
 ::Displays round box bottom
 CALL:BOX_RB
@@ -19,9 +19,9 @@ CALL:BOX_RB
 CALL:PAD_LINE
 ::Displays Press enter to return to previous menu
 CALL:PAD_PREV
-::Opens menu selection prompt with the specified options.
+::Opens menu selection prompt with the default options.
 CALL:MENU_SELECT
-::Opens ex_submenu.menu if 1 is entered
-IF "%SELECT%"=="1" CALL menuscript.cmd ex_submenu.menu
-IF "%SELECT%"=="2" CALL menuscript.cmd ex_pick.menu
-IF "%SELECT%"=="3" CALL menuscript.cmd ex_select.menu
+::Opens menu if 1-3 entered
+IF "%SELECT%"=="1" CALL menuscript.cmd ex_pick.menu
+IF "%SELECT%"=="2" CALL menuscript.cmd ex_select.menu
+IF "%SELECT%"=="3" CALL menuscript.cmd ex_moduledemo.menu
