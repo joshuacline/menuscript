@@ -1,8 +1,8 @@
-IF NOT DEFINED PROG_SOURCE EXIT /B
+IF NOT DEFINED PROG_FOLDER EXIT /B
 :DISK_LIST
 IF DEFINED QUERY_MSG ECHO.%QUERY_MSG%
 FOR /F "TOKENS=1 DELIMS=:" %%G in ("%SystemDrive%") DO (SET "SYS_VOLUME=%%G")
-FOR /F "TOKENS=1 DELIMS=:" %%G in ("%PROG_SOURCE%") DO (SET "PROG_VOLUME=%%G")
+FOR /F "TOKENS=1 DELIMS=:" %%G in ("%PROG_FOLDER%") DO (SET "PROG_VOLUME=%%G")
 (ECHO.LIST DISK&&ECHO.Exit)>"$DSK"&&FOR /F "TOKENS=1-5 SKIP=8 DELIMS= " %%a in ('DISKPART /s "$DSK"') DO (
 IF "%%a"=="Disk" IF NOT "%%b"=="###" SET "DISKVND="&&(ECHO.select disk %%b&&ECHO.detail disk&&ECHO.list partition&&ECHO.Exit)>"$DSK"&&SET "LTRX=X"&&FOR /F "TOKENS=1-9 SKIP=6 DELIMS={}: " %%1 in ('DISKPART /s "$DSK"') DO (
 IF "%%1 %%2"=="Disk %%b" ECHO.&&ECHO.   %@@%Disk%$$% ^(%##%%%b%$$%^)
@@ -17,7 +17,7 @@ IF NOT DEFINED LTRX IF NOT "%%2"=="DiskPart..." ECHO.    %@@%Part %%2%$$% Vol * 
 IF DEFINED DISK_GET CALL:DISK_DETECT>NUL 2>&1
 ECHO.
 FOR %%a in ($GO LTRX PARTX SIZEX QUERY_MSG DISK_GET) DO (SET "%%a=")
-DEL /Q /F "$DSK*">NUL 2>&1
+IF EXIST "$DSK" DEL /Q /F "$DSK">NUL 2>&1
 EXIT /B
 :DISK_CHECK
 SET "$GO="&&FOR %%$ in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) DO (IF "%%$"=="%LTRX%" SET "$GO=1"&&ECHO.    %@@%Part %PARTX%%$$% Vol %@@%%LTRX%%$$% %SIZEX%)
