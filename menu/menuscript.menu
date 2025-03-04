@@ -1,0 +1,21 @@
+MENU-SCRIPT
+@ECHO OFF
+::CLS
+CALL "%MODULE_FOLDER%\PADLINE.CMD"&&SET "$BOX=RT"&&CALL "%MODULE_FOLDER%\BOXDISP.CMD"
+ECHO.                              MenuScript&&ECHO.&&ECHO.  %@@%AVAILABLE MENUs:%$$%&&ECHO.&&SET "$FOLD=%MENU_FOLDER%"&&SET "$FILT=*.MENU"&&SET "$DISP=BAS"&&CALL "%MODULE_FOLDER%\FILELIST.CMD"
+ECHO.&&SET "$BOX=RB"&&CALL "%MODULE_FOLDER%\BOXDISP.CMD"&&CALL "%MODULE_FOLDER%\PADLINE.CMD"&&ECHO.           (%##%E%$$%)dit               (%##%R%$$%)un              (%##%O%$$%)ptions&&CALL "%MODULE_FOLDER%\PADLINE.CMD"
+ECHO.               Press (%##%Enter%$$%) to return to previous menu&&CALL "%MODULE_FOLDER%\MENUSELECT.CMD"
+SET "$LNCH="
+IF "%SELECT%"=="~" SET&&PAUSE
+IF "%SELECT%"=="R" SET "$LNCH=Open"
+::Menu loop ($LOOP) is enabled for option O since a .menu file is not loaded
+IF "%SELECT%"=="O" SET "$LOOP=1"&&CALL "%MODULE_FOLDER%\settings.cmd"
+::Menu loop ($LOOP) is enabled for option E since a .menu file is not loaded
+IF "%SELECT%"=="E" SET "$LOOP=1"&&SET "$LNCH=Edit"
+IF DEFINED $LNCH CALL "%MODULE_FOLDER%\PADLINE.CMD"&&SET "$BOX=RT"&&CALL "%MODULE_FOLDER%\BOXDISP.CMD"
+IF DEFINED $LNCH ECHO.                               %$LNCH% Menu&&ECHO.&&ECHO.  %@@%AVAILABLE MENUs:%$$%&&ECHO.
+IF DEFINED $LNCH SET "$FOLD=%MENU_FOLDER%"&&SET "$FILT=*.MENU"&&CALL "%MODULE_FOLDER%\FILELIST.CMD"&&ECHO.&&SET "$BOX=RB"&&CALL "%MODULE_FOLDER%\BOXDISP.CMD"
+IF DEFINED $LNCH CALL "%MODULE_FOLDER%\PADLINE.CMD"&&ECHO.               Press (%##%Enter%$$%) to return to previous menu&&CALL "%MODULE_FOLDER%\MENUSELECT.CMD"
+IF "%$LNCH%"=="Edit" IF DEFINED $PICK START NOTEPAD "%$PICK%"
+IF "%$LNCH%"=="Open" IF NOT DEFINED $CHOICE SET "$LOOP=1"
+IF "%$LNCH%"=="Open" IF DEFINED $CHOICE CALL menuscript.cmd "%$CHOICE%"

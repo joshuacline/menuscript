@@ -2,18 +2,17 @@ MENU-SCRIPT
 ::Clear screen
 ::CLS
 ::Displays padline
-CALL:PAD_LINE
+CALL "%MODULE_FOLDER%\PADLINE.CMD"
 ::Displays round box top
-CALL:BOX_RT
+SET "$BOX=RT"&&CALL "%MODULE_FOLDER%\BOXDISP.CMD"
 ::Menu content
 ECHO.                          This is disklist menu
 ::Opens disklist display
 CALL %MODULE_FOLDER%\DISKLIST.CMD
 ::Displays round box bottom
-CALL:BOX_RB
+SET "$BOX=RB"&&CALL "%MODULE_FOLDER%\BOXDISP.CMD"
 ::Displays padline
-CALL:PAD_LINE
-::Displays Press enter to return to previous menu
-CALL:PAD_PREV
+CALL "%MODULE_FOLDER%\PADLINE.CMD"
+ECHO.               Press (%##%Enter%$$%) to return to previous menu
 ::Opens menu selection prompt with the default options.
-CALL:MENU_SELECT
+CALL "%MODULE_FOLDER%\MENUSELECT.CMD"

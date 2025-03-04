@@ -4,6 +4,7 @@ MENU-SCRIPT
 ::Displays padline
 CALL "%MODULE_FOLDER%\PADLINE.CMD"
 ::Displays round box top
+::Round Top= RT   Round Bottom= RB   Square Top= ST   Square Bottom= SB   
 SET $BOX=RT&&CALL "%MODULE_FOLDER%\BOXDISP.CMD"
 ::Menu content
 ECHO.                        This is ex_moduledemo.menu
@@ -11,14 +12,12 @@ ECHO.
 ECHO. %$$%(%##% 1 %$$%) File Management Module
 ECHO. %$$%(%##% 2 %$$%) Disklist Module
 ECHO.
-::Option $BOX (required for module BOXDISP.CMD)
 ::Round Top= RT   Round Bottom= RB   Square Top= ST   Square Bottom= SB   
 ::Displays round box bottom
 SET $BOX=RB&&CALL "%MODULE_FOLDER%\BOXDISP.CMD"
 ::Displays padline
 CALL "%MODULE_FOLDER%\PADLINE.CMD"
-::Displays Press enter to return to previous menu
-CALL:PAD_PREV
+ECHO.               Press (%##%Enter%$$%) to return to previous menu
 ::Opens menu selection prompt with the default options.
 CALL "%MODULE_FOLDER%\MENUSELECT.CMD"
 

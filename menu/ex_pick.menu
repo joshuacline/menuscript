@@ -2,11 +2,11 @@ MENU-SCRIPT
 ::Clear screen
 ::CLS
 ::Displays padline
-CALL:PAD_LINE
+CALL "%MODULE_FOLDER%\PADLINE.CMD"
 ::Displays round box top
-CALL:BOX_RT
+SET "$BOX=RT"&&CALL "%MODULE_FOLDER%\BOXDISP.CMD"
 ::Menu content
-ECHO.                               File List
+ECHO.                             File Picker
 ECHO.
 ::Options for file list (required)
 SET $FOLD=%MENU_FOLDER%
@@ -14,15 +14,14 @@ SET $FILT=*.MENU
 ::Optional for non-numbered file list
 ::SET $DISP=BAS
 ::Opens file list with the specified options.
-CALL:FILE_LIST
+CALL "%MODULE_FOLDER%\FILELIST.CMD"
 ECHO.
 ::Displays round box botttom
-CALL:BOX_RB
+SET "$BOX=RB"&&CALL "%MODULE_FOLDER%\BOXDISP.CMD"
 ::Displays padline
-CALL:PAD_LINE
-::Displays Press enter to return to previous menu
-CALL:PAD_PREV
+CALL "%MODULE_FOLDER%\PADLINE.CMD"
+ECHO.               Press (%##%Enter%$$%) to return to previous menu
 ::Opens menu selection prompt with the default options + pick file
-CALL:MENU_SELECT
+CALL "%MODULE_FOLDER%\MENUSELECT.CMD"
 ECHO. $PICK: %$PICK%    $CHOICE: %$CHOICE%
 PAUSE
