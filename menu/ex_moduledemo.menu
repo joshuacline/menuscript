@@ -22,5 +22,5 @@ ECHO.               Press (%##%Enter%$$%) to return to previous menu
 CALL "%MODULE_FOLDER%\MENUSELECT.CMD"
 
 ::Menu loop ($LOOP) is enabled for option 1 since a .menu file is not loaded
-IF "%SELECT%"=="1" SET "$LOOP=1"&&CALL "%MODULE_FOLDER%\FILEMANAGEMENT.CMD"
+IF "%SELECT%"=="1" CALL "%MODULE_FOLDER%\FILEMANAGEMENT.CMD"&SET "$LOOP="
 IF "%SELECT%"=="2" CALL menuscript.cmd ex_disklist.menu
